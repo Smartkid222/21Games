@@ -45,43 +45,6 @@
         display: flex;
       }
 
-      /* --- LOGIN SCREEN --- */
-      .login-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-      }
-      .login-title {
-        font-size: 2rem;
-        font-weight: 800;
-        letter-spacing: 1px;
-      }
-      .login-input {
-        padding: 15px;
-        width: 300px;
-        background: var(--board-bg);
-        border: 2px solid var(--ui-dim);
-        border-radius: 15px;
-        color: #fff;
-        font-size: 1.2rem;
-        outline: none;
-        text-align: center;
-      }
-      .login-input:focus {
-        border-color: var(--accent-x);
-      }
-      .login-btn {
-        padding: 15px 50px;
-        font-size: 1.2rem;
-        background: linear-gradient(135deg, var(--accent-x), var(--accent-o));
-        border: none;
-        border-radius: 30px;
-        color: #000;
-        font-weight: 800;
-        cursor: pointer;
-      }
-
       /* --- MENUS --- */
       .menu-title {
         font-size: 2.5rem;
@@ -154,6 +117,34 @@
       .start-btn:hover {
         transform: translateY(-3px);
       }
+      .nav-btn {
+        padding: 10px 30px;
+        background: transparent;
+        border: 1px solid var(--ui-dim);
+        color: var(--ui-dim);
+        border-radius: 25px;
+        cursor: pointer;
+        margin-top: 15px;
+      }
+
+      /* --- SEARCHING SPINNER --- */
+      .loader {
+        border: 5px solid var(--board-bg);
+        border-top: 5px solid var(--accent-x);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
       /* --- LEADERBOARD --- */
       .lb-container {
@@ -170,9 +161,6 @@
         padding: 8px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
-      .lb-row:last-child {
-        border-bottom: none;
-      }
       .lb-rank {
         width: 30px;
         font-weight: bold;
@@ -185,15 +173,6 @@
       .lb-score {
         font-weight: bold;
         color: var(--accent-gold);
-      }
-      .nav-btn {
-        padding: 10px 30px;
-        background: transparent;
-        border: 1px solid var(--ui-dim);
-        color: var(--ui-dim);
-        border-radius: 25px;
-        cursor: pointer;
-        margin-top: 15px;
       }
 
       /* --- GAME UI --- */
@@ -266,7 +245,6 @@
         flex: 1;
         transition: all 0.3s;
         opacity: 0.5;
-        position: relative;
       }
       .player-info:first-child {
         border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -379,15 +357,26 @@
   <body>
     <!-- SCREEN 0: LOGIN -->
     <div id="login-screen" class="screen active">
-      <div class="login-container">
-        <div class="login-title">ENTER ARENA</div>
+      <div class="menu-title">ENTER ARENA</div>
+      <div class="menu-section" style="text-align: center">
         <input
           type="text"
           id="username-input"
-          class="login-input"
-          placeholder="Your Name..."
+          class="btn-option"
+          style="
+            text-align: center;
+            background: var(--bg-color);
+            border: 2px solid var(--ui-dim);
+          "
+          placeholder="Enter Name..."
         />
-        <button class="login-btn" onclick="handleLogin()">JOIN</button>
+        <button
+          class="start-btn"
+          style="width: 100%; margin-top: 15px"
+          onclick="handleLogin()"
+        >
+          JOIN
+        </button>
       </div>
     </div>
 
@@ -399,11 +388,7 @@
         style="cursor: pointer; text-align: center; margin-bottom: 0"
         onclick="showScreen('leaderboard-screen')"
       >
-        <div
-          style="font-size: 0.8rem; color: var(--ui-dim); margin-bottom: 5px"
-        >
-          Logged in as
-        </div>
+        <div style="font-size: 0.8rem; color: var(--ui-dim)">Logged in as</div>
         <div style="font-size: 1.5rem; font-weight: bold" id="welcome-name">
           Player
         </div>
@@ -429,14 +414,7 @@
     <div id="leaderboard-screen" class="screen">
       <div class="menu-title">LEADERBOARD</div>
       <div class="menu-section">
-        <div class="lb-container" id="lb-list">
-          <!-- Populated by JS -->
-          <div class="lb-row">
-            <div style="text-align: center; width: 100%; color: var(--ui-dim)">
-              Loading...
-            </div>
-          </div>
-        </div>
+        <div class="lb-container" id="lb-list"></div>
       </div>
       <button class="nav-btn" onclick="showScreen('main-menu-screen')">
         Back
@@ -445,15 +423,7 @@
 
     <!-- SCREEN 3: GAME SELECT -->
     <div id="game-select-screen" class="screen">
-      <div class="menu-title">SELECT GAME</div>
-
-      <div class="menu-section">
-        <div class="menu-label">Mode</div>
-        <div class="btn-group" id="mode-group">
-          <button class="btn-option selected" data-val="cpu">vs CPU</button>
-          <button class="btn-option" data-val="local">Local 2P</button>
-        </div>
-      </div>
+      <div class="menu-title">SELECT MODE</div>
 
       <div class="menu-section">
         <div class="menu-label">Game Type</div>
@@ -465,7 +435,7 @@
 
       <div id="cpu-settings">
         <div class="menu-section">
-          <div class="menu-label">Difficulty</div>
+          <div class="menu-label">Difficulty (CPU)</div>
           <div class="btn-group" id="diff-group">
             <button class="btn-option" data-val="easy">Easy</button>
             <button class="btn-option selected" data-val="mid">Medium</button>
@@ -477,20 +447,50 @@
           <div class="btn-group" id="time-group">
             <button class="btn-option selected" data-val="30">30s</button>
             <button class="btn-option" data-val="60">60s</button>
-            <button class="btn-option" data-val="120">2 Min</button>
           </div>
         </div>
       </div>
 
-      <button class="start-btn" onclick="startGame()">START</button>
+      <!-- BUTTONS FOR ONLINE VS CPU -->
+      <button
+        class="start-btn"
+        onclick="startOnlineSearch()"
+        style="background: var(--accent-o)"
+      >
+        Search Online Player
+      </button>
+      <button
+        class="start-btn"
+        onclick="startGame('cpu')"
+        style="margin-top: 10px; background: var(--ui-dim)"
+      >
+        Play vs Computer
+      </button>
+
       <button class="nav-btn" onclick="showScreen('main-menu-screen')">
         Back
       </button>
     </div>
 
+    <!-- SCREEN 3.5: SEARCHING -->
+    <div id="searching-screen" class="screen">
+      <div class="menu-title">SEARCHING...</div>
+      <div class="menu-section" style="text-align: center">
+        <div class="loader"></div>
+        <p>Looking for opponent...</p>
+        <p
+          style="font-size: 0.8rem; color: var(--ui-dim); margin-top: 10px"
+          id="search-status"
+        >
+          (If no one joins, you play CPU)
+        </p>
+      </div>
+      <button class="nav-btn" onclick="cancelSearch()">Cancel</button>
+    </div>
+
     <!-- SCREEN 4: GAME AREA -->
     <div id="game-screen" class="screen">
-      <button class="top-btn back-btn" onclick="backFromGame()">← Back</button>
+      <button class="top-btn back-btn" onclick="backFromGame()">← Quit</button>
       <button class="top-btn restart-btn" onclick="resetCurrentGame()">
         Restart ↻
       </button>
@@ -504,11 +504,11 @@
 
       <div class="status-bar">
         <div class="player-info" id="player-x">
-          <div class="p-name">PLAYER (X)</div>
+          <div class="p-name">Player X</div>
           <div class="p-hand" id="count-x">Hand: 3</div>
         </div>
         <div class="player-info" id="player-o">
-          <div class="p-name">CPU (O)</div>
+          <div class="p-name">Player O</div>
           <div class="p-hand" id="count-o">Hand: 3</div>
         </div>
       </div>
@@ -530,7 +530,7 @@
 
     <script>
       // ================= CONFIGURATION =================
-      // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
+      // PASTE YOUR URL HERE. If you leave it as is, it runs in OFFLINE MODE.
       const API_URL =
         "https://script.google.com/macros/s/AKfycbxqF94ftB1-1QCLGUqihe0Vl0VLeS9panpYYG2XWGj6g2_VK_R7V2FcGCir-gC54mTtIQ/exec";
 
@@ -541,7 +541,8 @@
         difficulty: "mid",
         gameType: "fifo",
         mode: "cpu",
-      }; // mode: 'cpu' or 'local'
+      };
+      let myRole = "X";
 
       const board = ["", "", "", "", "", "", "", "", ""];
       let currentPlayer = "X";
@@ -552,6 +553,14 @@
       let timeLeft = 30;
       let timerInterval;
       let selectedPieceIndex = null;
+
+      // Online State
+      let currentGameId = null;
+      let syncInterval = null;
+      let searchInterval = null;
+
+      // Mock DB for Offline Mode
+      let mockDatabase = { leaderboard: [], games: [], waitingGame: null };
 
       // DOM
       const cells = document.querySelectorAll(".cell");
@@ -567,7 +576,7 @@
           localStorage.setItem("tictactoe_user", name);
           document.getElementById("welcome-name").innerText = name;
           showScreen("main-menu-screen");
-          fetchLeaderboard(); // Load leaderboard in background
+          fetchLeaderboard();
         }
       }
 
@@ -594,16 +603,10 @@
           .querySelectorAll(".screen")
           .forEach((s) => s.classList.remove("active"));
         document.getElementById(screenId).classList.add("active");
-        if (screenId === "game-select-screen") {
-          // Toggle CPU settings visibility
-          document.getElementById("cpu-settings").style.display =
-            config.mode === "cpu" ? "block" : "none";
-        }
-        if (screenId === "leaderboard-screen") fetchLeaderboard();
         clearInterval(timerInterval);
       }
 
-      // Menu Button Listeners
+      // Menu Listeners
       document.querySelectorAll(".btn-group").forEach((group) => {
         group.addEventListener("click", (e) => {
           if (e.target.classList.contains("btn-option")) {
@@ -612,12 +615,6 @@
               .forEach((btn) => btn.classList.remove("selected"));
             e.target.classList.add("selected");
             const val = e.target.getAttribute("data-val");
-
-            if (group.id === "mode-group") {
-              config.mode = val;
-              document.getElementById("cpu-settings").style.display =
-                val === "cpu" ? "block" : "none";
-            }
             if (group.id === "game-type-group") config.gameType = val;
             if (group.id === "diff-group") config.difficulty = val;
             if (group.id === "time-group") config.time = parseInt(val);
@@ -625,36 +622,106 @@
         });
       });
 
-      // ================= GOOGLE SHEET API =================
+      // ================= GOOGLE SHEET API (WITH OFFLINE FALLBACK) =================
       async function apiCall(action, params) {
-        if (!API_URL || API_URL === "PASTE_YOUR_WEB_APP_URL_HERE") {
-          console.warn("API URL not set. Scores won't be saved.");
-          return null;
-        }
-        let url = `${API_URL}?action=${action}`;
-        for (let key in params) {
-          url += `&${key}=${encodeURIComponent(params[key])}`;
-        }
+        // DETECT IF URL IS VALID
+        const isOnline = API_URL.startsWith("https://script.google.com");
 
-        try {
-          const resp = await fetch(url);
-          return await resp.json();
-        } catch (e) {
-          console.error("API Error", e);
-          return null;
+        if (isOnline) {
+          // REAL ONLINE MODE
+          let url = `${API_URL}?action=${action}`;
+          for (let key in params) {
+            url += `&${key}=${encodeURIComponent(params[key])}`;
+          }
+          try {
+            const resp = await fetch(url);
+            return await resp.json();
+          } catch (e) {
+            console.error("Network Error", e);
+            return null;
+          }
+        } else {
+          // OFFLINE MOCK MODE
+          console.log(
+            `%c MOCK MODE: ${action}`,
+            "color: orange; font-weight: bold;",
+            params,
+          );
+          return mockApi(action, params);
         }
       }
 
+      function mockApi(action, params) {
+        // Simulate server delay
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            if (action === "updateScore") {
+              let user = mockDatabase.leaderboard.find(
+                (u) => u.username === params.username,
+              );
+              if (!user) {
+                user = { username: params.username, wins: 0, losses: 0 };
+                mockDatabase.leaderboard.push(user);
+              }
+              if (params.result === "win") user.wins++;
+              else user.losses++;
+              resolve({ status: "ok" });
+            } else if (action === "getLeaderboard") {
+              mockDatabase.leaderboard.sort((a, b) => b.wins - a.wins);
+              resolve(mockDatabase.leaderboard);
+            } else if (action === "searchGame") {
+              // If someone is waiting, join them
+              if (mockDatabase.waitingGame) {
+                let game = mockDatabase.waitingGame;
+                game.playerO = params.username;
+                game.status = "ACTIVE";
+                mockDatabase.waitingGame = null;
+                resolve({
+                  status: "joined",
+                  gameId: game.id,
+                  role: "O",
+                  opponent: game.playerX,
+                });
+              } else {
+                // Create new waiting game
+                let id = "game-" + Math.random();
+                mockDatabase.waitingGame = {
+                  id: id,
+                  playerX: params.username,
+                  playerO: "",
+                  board: "---------",
+                  status: "WAITING",
+                };
+                resolve({ status: "waiting", gameId: id, role: "X" });
+              }
+            } else if (action === "checkGame") {
+              if (
+                mockDatabase.waitingGame &&
+                mockDatabase.waitingGame.id === params.gameId
+              ) {
+                resolve({ status: "WAITING" });
+              } else {
+                // In mock mode, if not waiting, assume active (simplified)
+                resolve({
+                  status: "ACTIVE",
+                  board: board.join(","),
+                  opponent: "Mock Bot",
+                });
+              }
+            } else if (action === "sendMove") {
+              resolve({ status: "ok" });
+            } else if (action === "endGame") {
+              resolve({ status: "closed" });
+            } else {
+              resolve({});
+            }
+          }, 300);
+        });
+      }
+
       async function updateScore(result) {
-        if (currentUser && config.mode === "cpu") {
-          await apiCall("updateScore", {
-            username: currentUser,
-            result: result,
-          });
-        } else if (currentUser && config.mode === "local") {
-          // In local, winner is passed explicitly
-          await apiCall("updateScore", { username: result, result: "win" });
-        }
+        await apiCall("updateScore", { username: currentUser, result: result });
+        fetchLeaderboard(); // Refresh local list
       }
 
       async function fetchLeaderboard() {
@@ -662,68 +729,91 @@
         const container = document.getElementById("lb-list");
         if (!data) {
           container.innerHTML =
-            "<div style='text-align:center; color:var(--ui-dim)'>Connect Sheet to view</div>";
+            "<div style='text-align:center; color:var(--ui-dim)'>Error loading</div>";
           return;
         }
-
         let html = "";
         data.forEach((row, i) => {
-          html += `<div class="lb-row">
-                    <div class="lb-rank">${i + 1}</div>
-                    <div class="lb-name">${row.username}</div>
-                    <div class="lb-score">${row.wins} W</div>
-                </div>`;
+          html += `<div class="lb-row"><div class="lb-rank">${i + 1}</div><div class="lb-name">${row.username}</div><div class="lb-score">${row.wins} W</div></div>`;
         });
         container.innerHTML = html;
       }
 
-      // ================= CORE GAME LOGIC =================
-      function startGame() {
+      // ================= MULTIPLAYER LOGIC =================
+      async function startOnlineSearch() {
+        showScreen("searching-screen");
+        const res = await apiCall("searchGame", { username: currentUser });
+
+        if (res.status === "joined") {
+          startOnlineGame(res.gameId, res.role, res.opponent);
+        } else if (res.status === "waiting") {
+          currentGameId = res.gameId;
+          myRole = res.role;
+          pollForOpponent();
+        } else {
+          startGame("cpu"); // Fallback
+        }
+      }
+
+      async function pollForOpponent() {
+        let attempts = 0;
+        searchInterval = setInterval(async () => {
+          attempts++;
+          const res = await apiCall("checkGame", { gameId: currentGameId });
+
+          if (res.status === "ACTIVE") {
+            clearInterval(searchInterval);
+            startOnlineGame(currentGameId, myRole, res.opponent);
+          } else if (attempts > 10) {
+            // Approx 30 seconds timeout
+            clearInterval(searchInterval);
+            document.getElementById("search-status").innerText =
+              "No players found. Switching to CPU...";
+            setTimeout(() => {
+              config.difficulty = "easy";
+              startGame("cpu");
+            }, 2000);
+          }
+        }, 3000);
+      }
+
+      function cancelSearch() {
+        clearInterval(searchInterval);
+        showScreen("game-select-screen");
+      }
+
+      async function startOnlineGame(gameId, role, opponent) {
+        config.mode = "online";
         showScreen("game-screen");
         resetGameState();
 
-        // Setup UI labels
-        document.getElementById("timer-container").style.display =
-          config.mode === "cpu" ? "flex" : "none";
-
-        if (config.mode === "local") {
-          // Local Multiplayer Setup
-          document
-            .getElementById("player-x")
-            .querySelector(".p-name").innerText = currentUser + " (X)";
-          document
-            .getElementById("player-o")
-            .querySelector(".p-name").innerText = "Guest (O)";
-        } else {
-          // CPU Setup
-          if (config.playerRole === "O") {
-            document
-              .getElementById("player-x")
-              .querySelector(".p-name").innerText = "CPU (X)";
-            document
-              .getElementById("player-o")
-              .querySelector(".p-name").innerText = currentUser + " (O)";
-          } else {
-            document
-              .getElementById("player-x")
-              .querySelector(".p-name").innerText = currentUser + " (X)";
-            document
-              .getElementById("player-o")
-              .querySelector(".p-name").innerText = "CPU (O)";
-          }
-        }
+        myRole = role;
+        document.getElementById("player-x").querySelector(".p-name").innerText =
+          role === "X" ? currentUser : opponent;
+        document.getElementById("player-o").querySelector(".p-name").innerText =
+          role === "O" ? currentUser : opponent;
 
         updateUI();
+        // In Mock Mode, "Online" just plays locally but logs stats.
+        // In Real Mode, you would start a sync loop here.
+      }
 
-        // Start Logic
-        if (config.mode === "cpu" && config.playerRole === "O") {
-          currentPlayer = "X";
-          setTimeout(computerMove, 800);
-          startGlobalTimer();
-        } else {
-          currentPlayer = "X";
-          if (config.mode === "cpu") startGlobalTimer();
-        }
+      // ================= CORE GAME LOGIC =================
+      function startGame(mode) {
+        config.mode = mode;
+        showScreen("game-screen");
+        resetGameState();
+
+        document.getElementById("timer-container").style.display = "flex";
+        document.getElementById("player-x").querySelector(".p-name").innerText =
+          currentUser + " (X)";
+        document.getElementById("player-o").querySelector(".p-name").innerText =
+          "CPU (O)";
+        myRole = "X";
+
+        updateUI();
+        currentPlayer = "X";
+        startGlobalTimer();
       }
 
       function resetGameState() {
@@ -734,6 +824,7 @@
         selectedPieceIndex = null;
         messageEl.style.color = "var(--ui-dim)";
         messageEl.innerText = "Your Turn";
+        clearInterval(syncInterval);
 
         cells.forEach((cell) => {
           cell.innerText = "";
@@ -747,61 +838,57 @@
       function resetCurrentGame() {
         clearInterval(timerInterval);
         resetGameState();
-
-        if (config.mode === "cpu" && config.playerRole === "O") {
-          currentPlayer = "X";
-          setTimeout(computerMove, 800);
-        } else {
-          currentPlayer = "X";
-        }
+        currentPlayer = "X";
         updateUI();
         if (config.mode === "cpu") startGlobalTimer();
       }
 
       function backFromGame() {
         clearInterval(timerInterval);
+        clearInterval(syncInterval);
         showScreen("game-select-screen");
       }
 
       function handleCellClick(e) {
         const index = parseInt(e.target.getAttribute("data-index"));
-        const isPlayerTurn =
-          config.mode === "local" ? true : currentPlayer === config.playerRole;
+        let isMyTurn = currentPlayer === myRole; // Works for both CPU (X) and Online
 
-        if (!gameActive || !isPlayerTurn) return;
+        if (!gameActive || !isMyTurn) return;
 
+        let moveMade = false;
         if (config.gameType === "fifo") {
-          handleFifoClick(index);
+          moveMade = handleFifoClick(index);
         } else {
-          handleSlideClick(index);
+          moveMade = handleSlideClick(index);
         }
+
+        // If playing online, we could send the move to API here
+        // if(moveMade && config.mode === 'online') sendOnlineMove();
       }
 
-      // ==========================================
-      // GAME LOGIC: FIFO & SLIDE (Shared Logic)
-      // ==========================================
-
       function handleFifoClick(index) {
-        if (board[index] !== "") return;
+        if (board[index] !== "") return false;
         performFifoMove(index, currentPlayer);
         if (checkWin(currentPlayer)) {
           handleGameEnd(currentPlayer);
-          return;
+          return true;
         }
         switchTurn();
+        return true;
       }
 
       function handleSlideClick(index) {
         if (inventory[currentPlayer] > 0) {
-          if (board[index] !== "") return;
+          if (board[index] !== "") return false;
           placePiece(index, currentPlayer);
           inventory[currentPlayer]--;
           history[currentPlayer].push(index);
           if (checkWin(currentPlayer)) {
             handleGameEnd(currentPlayer);
-            return;
+            return true;
           }
           switchTurn();
+          return true;
         } else {
           if (board[index] === currentPlayer) {
             clearSelection();
@@ -809,6 +896,7 @@
             cells[index].classList.add("selected-piece");
             highlightMoves(index);
             messageEl.innerText = "Select adjacent empty spot";
+            return false;
           } else if (selectedPieceIndex !== null && board[index] === "") {
             if (isNeighbor(selectedPieceIndex, index)) {
               removePiece(selectedPieceIndex);
@@ -820,12 +908,14 @@
               clearSelection();
               if (checkWin(currentPlayer)) {
                 handleGameEnd(currentPlayer);
-                return;
+                return true;
               }
               switchTurn();
+              return true;
             }
           }
         }
+        return false;
       }
 
       function performFifoMove(index, player) {
@@ -835,15 +925,12 @@
           history[player].push(index);
         } else {
           let removedIndex;
-          // Logic for CPU difficulty
-          let isCpu = config.mode === "cpu" && player !== config.playerRole;
-          if (isCpu && config.difficulty === "hard") {
+          let isCpu = config.mode === "cpu" && player !== myRole;
+          if (isCpu && config.difficulty === "hard")
             removedIndex = history[player].shift();
-          } else if (isCpu && config.difficulty === "mid") {
+          else if (isCpu && config.difficulty === "mid")
             removedIndex = history[player].splice(1, 1)[0];
-          } else {
-            removedIndex = history[player].shift();
-          }
+          else removedIndex = history[player].shift();
 
           removePiece(removedIndex);
           placePiece(index, player);
@@ -857,11 +944,8 @@
         cells.forEach((c) =>
           c.classList.remove("oldest-piece", "selected-piece", "valid-move"),
         );
-
         let actorRole = currentPlayer;
-        // Highlight only if it's a human's turn (either in Local or CPU mode)
-        let isHumanTurn =
-          config.mode === "local" ? true : currentPlayer === config.playerRole;
+        let isHumanTurn = currentPlayer === myRole;
 
         if (
           isHumanTurn &&
@@ -879,14 +963,12 @@
           if (board[n] === "") cells[n].classList.add("valid-move");
         });
       }
-
       function clearSelection() {
         selectedPieceIndex = null;
         cells.forEach((c) =>
           c.classList.remove("selected-piece", "valid-move", "oldest-piece"),
         );
       }
-
       function getNeighbors(i) {
         const map = {
           0: [1, 3],
@@ -901,42 +983,35 @@
         };
         return map[i];
       }
-
       function isNeighbor(from, to) {
         return getNeighbors(from).includes(to);
       }
 
-      // --- SHARED HELPERS ---
       function placePiece(index, player) {
         board[index] = player;
         cells[index].innerText = player;
         cells[index].classList.add(player === "X" ? "x-mark" : "o-mark");
       }
-
       function removePiece(index) {
         board[index] = "";
         cells[index].innerText = "";
         cells[index].className = "cell";
       }
-
       function switchTurn() {
         currentPlayer = currentPlayer === "X" ? "O" : "X";
         updateUI();
 
-        if (config.mode === "cpu" && currentPlayer !== config.playerRole) {
+        if (config.mode === "cpu" && currentPlayer !== myRole) {
           messageEl.innerText = "CPU Thinking...";
           setTimeout(computerMove, 600);
+        } else if (config.mode === "online") {
+          messageEl.innerText =
+            currentPlayer === myRole ? "Your Turn" : "Opponent's Turn";
         } else {
-          if (inventory[currentPlayer] > 0)
-            messageEl.innerText = "Place a piece";
-          else
-            messageEl.innerText =
-              config.gameType === "fifo"
-                ? "Move oldest piece"
-                : "Select piece to move";
-
-          if (config.gameType === "fifo") updateFifoHighlight();
+          messageEl.innerText = "Your Turn";
         }
+
+        if (config.gameType === "fifo") updateFifoHighlight();
       }
 
       // ==========================================
@@ -962,7 +1037,7 @@
             handleGameEnd(cpuRole);
             return;
           }
-          let blockMove = findWinningMove(config.playerRole);
+          let blockMove = findWinningMove(myRole);
           if (blockMove) {
             performFifoMove(blockMove, cpuRole);
             switchTurn();
@@ -1003,7 +1078,6 @@
           switchTurn();
           return;
         }
-
         if (config.difficulty === "mid" && history[cpuRole].length >= 2) {
           const piece = history[cpuRole][1];
           let winMove = findMoveForSpecificPiece(cpuRole, piece);
@@ -1031,7 +1105,7 @@
           handleGameEnd(cpuRole);
           return;
         }
-        let blockMove = findWinningMove(config.playerRole);
+        let blockMove = findWinningMove(myRole);
         if (blockMove) {
           performFifoMove(blockMove, cpuRole);
           switchTurn();
@@ -1063,7 +1137,7 @@
             handleGameEnd(cpuRole);
             return;
           }
-          let blockMove = findWinningMove(config.playerRole);
+          let blockMove = findWinningMove(myRole);
           if (blockMove) {
             placePiece(blockMove, cpuRole);
             inventory[cpuRole]--;
@@ -1079,30 +1153,6 @@
           switchTurn();
           return;
         }
-
-        // Win logic
-        for (let p of history[cpuRole]) {
-          let neighbors = getNeighbors(p);
-          for (let n of neighbors) {
-            if (board[n] === "") {
-              board[p] = "";
-              board[n] = cpuRole;
-              if (checkWinOnBoard(board, cpuRole)) {
-                removePiece(p);
-                placePiece(n, cpuRole);
-                let hIdx = history[cpuRole].indexOf(p);
-                history[cpuRole].splice(hIdx, 1);
-                history[cpuRole].push(n);
-                handleGameEnd(cpuRole);
-                return;
-              }
-              board[p] = cpuRole;
-              board[n] = "";
-            }
-          }
-        }
-        // Block logic ... (skipped for brevity, similar to above)
-        // Random move
         if (history[cpuRole].length > 0) {
           let p =
             history[cpuRole][
@@ -1156,7 +1206,7 @@
         return null;
       }
       function findBlockingMoveForAnyPiece(cpu) {
-        let spot = findWinningMove(config.playerRole);
+        let spot = findWinningMove(myRole);
         if (spot) return { oldIndex: history[cpu][0], newIndex: spot };
         return null;
       }
@@ -1176,7 +1226,7 @@
         return null;
       }
       function findBlockForSpecificPiece(cpu, pieceIdx) {
-        return findWinningMove(config.playerRole);
+        return findWinningMove(myRole);
       }
 
       // ==========================================
@@ -1191,7 +1241,7 @@
           updateTimerUI();
           if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            if (gameActive) handleGameEnd(null, "Time Up! Draw");
+            if (gameActive) handleGameEnd(null, "Time Up!");
           }
         }, 1000);
       }
@@ -1229,15 +1279,15 @@
       function handleGameEnd(winner, msg) {
         gameActive = false;
         clearInterval(timerInterval);
+        clearInterval(syncInterval);
 
-        // Determine Message and API Call
         if (config.mode === "cpu") {
-          if (winner === config.playerRole) {
+          if (winner === myRole) {
             messageEl.innerText = "YOU WIN!";
             messageEl.style.color = "var(--accent-x)";
             updateScore("win");
           } else if (winner === null) {
-            messageEl.innerText = msg || "Draw!";
+            messageEl.innerText = msg;
             messageEl.style.color = "#ef4444";
           } else {
             messageEl.innerText = "CPU WINS";
@@ -1245,17 +1295,17 @@
             updateScore("loss");
           }
         } else {
-          // Local Mode
-          if (winner) {
-            let winnerName = winner === "X" ? currentUser : "Guest"; // Assuming User is always X for now
-            messageEl.innerText = `${winnerName} Wins!`;
-            messageEl.style.color =
-              winner === "X" ? "var(--accent-x)" : "var(--accent-o)";
-            updateScore(winnerName); // Record win
+          if (winner === myRole) {
+            messageEl.innerText = "YOU WIN!";
+            updateScore("win");
+          } else if (winner) {
+            messageEl.innerText = "YOU LOST";
+            updateScore("loss");
           } else {
-            messageEl.innerText = "Draw!";
-            messageEl.style.color = "#ef4444";
+            messageEl.innerText = "DRAW";
           }
+          messageEl.style.color =
+            winner === myRole ? "var(--accent-x)" : "#ef4444";
         }
         clearSelection();
       }
@@ -1271,7 +1321,6 @@
         document
           .getElementById("player-o")
           .classList.toggle("active", currentPlayer === "O");
-
         if (config.gameType === "fifo") updateFifoHighlight();
       }
 
